@@ -3,9 +3,15 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   devIndicators: false,
   images: {
-    domains: [
-      'tdcvczpwrjghejxktwbv.supabase.co',
-      'arcgxazaxfmxinjtkshr.supabase.co',
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'tdcvczpwrjghejxktwbv.supabase.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'arcgxazaxfmxinjtkshr.supabase.co',
+      },
     ],
   },
 }
