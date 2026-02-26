@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                    String                 @id @default(cuid())
+  name                  String
+  email                 String                 @unique
+  password              String
+  image                 String?
+  createdAt             DateTime               @default(now())
+  transactions          Transaction[]
+  budgets               Budget[]
+  notes                 Note[]
+  savingGoals           SavingGoal[]
+  recurringTransactions RecurringTransaction[]
+  categories            Category[]
+}
+
+model Category {
+  id                    String                 @id @default(cuid())
+  name                  String
+  type                  String
+  icon                  String?
+  color                 String?
+  createdAt             DateTime               @default(now())
+  userId                String?
+  user                  User?                  @relation(fields: [userId], references: [id])
+  transactions          Transaction[]
+  budgets               Budget[]
+  recurringTransactions RecurringTransaction[]
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  amount      Float
+  type        String
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  description String?
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Budget {
+  id         String   @id @default(cuid())
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+  amount     Float
+  month      Int
+  year       Int
+  createdAt  DateTime @default(now())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@unique([categoryId, month, year, userId])
+}
+
+model RecurringTransaction {
+  id          String   @id @default(cuid())
+  amount      Float
+  type        String
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  description String?
+  dayOfMonth  Int
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  color     String   @default("#ffffff")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model SavingGoal {
+  id            String    @id @default(cuid())
+  title         String
+  targetAmount  Float
+  currentAmount Float     @default(0)
+  deadline      DateTime?
+  icon          String    @default("🎯")
+  color         String    @default("#3b82f6")
+  isCompleted   Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+}
